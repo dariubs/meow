@@ -1,6 +1,11 @@
 #include <stdio.h>
 
 int main(int argc, char **argv) {
-    printf("Meow, World! 🐈\n");
-    return 0;
+    int r;
+    printf("Meow, World! 🐈\n\n");
+    if(argc < 2) {
+        r = repl();
+    }
+    return r;
 }
+
