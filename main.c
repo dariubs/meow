@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include "repl.c"
+
 int main(int argc, char **argv) {
     int r;
     printf("Meow, World! 🐈\n\n");
