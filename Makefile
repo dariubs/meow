@@ -1,5 +1,5 @@
 default: main.c repl.c
-	cc -o meow main.c
+	cc main.c -o meow -lreadline 
 
 clean:
 	-rm meow

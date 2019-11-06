@@ -1,17 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 
-int repl() {
-    for(;;) {
-        printf("(meow)> ");
-        char command[256];
-        
-        if(fgets(command, sizeof command, stdin)) {
-            command[strcspn(command, "\n")] = '\0';
-        } else {
-            return 0;
-        }
+#include <readline/readline.h>
+#include <readline/history.h>
 
+int repl() {
+    char *command;
+    for(;;) {        
+        command = readline("(meow)> ");
+        add_history(command);
+        
         if(!strcmp(command, "exit")) {
             printf(" by 🐱\n");
             return 0;
