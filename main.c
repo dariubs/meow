@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv) {
     int r;
-    printf("Meow, World! 🐈\n\n");
+    fprintf(stdout, "Meow, World! 🐈\n\n");
     if(argc < 2) {
         r = repl();
     }

@@ -11,10 +11,10 @@ int repl() {
         add_history(command);
         
         if(!strcmp(command, "exit")) {
-            printf(" by 🐱\n");
+            fprintf(stdout, " by 🐱\n");
             return 0;
         }
 
-        printf("%s\n", command);
+        fprintf(stdout, "%s\n", command);
     }
 }
