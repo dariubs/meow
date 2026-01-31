@@ -3,44 +3,59 @@
 #include <string.h>
 #include <signal.h>
 
+#include "run.h"
+
+static void trim(char *s) {
+    char *p = s + strlen(s);
+    while (p > s && (p[-1] == ' ' || p[-1] == '\t' || p[-1] == '\n')) *--p = '\0';
+}
+
+#ifdef MEOW_NO_READLINE
+
+#define LINE_MAX 4096
+
+int repl(void) {
+    static char line[LINE_MAX];
+    while (fputs("(meow)> ", stdout) != EOF && fflush(stdout) == 0 && fgets(line, LINE_MAX, stdin)) {
+        trim(line);
+        if (strcmp(line, "exit") == 0)
+            return 0;
+        if (*line) run_source(line, 1);
+    }
+    return 0;
+}
+
+#else
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include "cmd.c"
-
 static volatile int keepalive = 1;
 
-void sig_handler(int d);
-int check_command(char* command, char* str);
-
-int repl() {
-
-    signal(SIGINT, sig_handler);
-
-    struct Command cmd;
-    char *command;
-    while(keepalive) {        
-        cmd.str = readline("(meow)> ");
-        add_history(cmd.str);
-        
-        if(!check_command(cmd.str, "exit")) {
-            fprintf(stdout, "Meow 😿\n");
-            return 0;
-        } else if (!check_command(cmd.str, "hi")) {
-            fprintf(stdout, "Meow 🐱\n");
-            continue;
-        } else {
-            fprintf(stdout, "%s command not found😼\n", cmd.str);
-        }
-    }
-}
-
-void sig_handler(int d) {
+static void sig_handler(int d) {
+    (void)d;
     keepalive = 0;
-    fprintf(stdout, " by 😿\n");
+    fprintf(stdout, " by\n");
     exit(0);
 }
 
-int check_command(char* command, char* str) {
-    return strcmp(command, str);
+int repl(void) {
+#ifndef _WIN32
+    signal(SIGINT, sig_handler);
+#endif
+    while (keepalive) {
+        char *line = readline("(meow)> ");
+        if (!line) break;
+        add_history(line);
+        trim(line);
+        if (strcmp(line, "exit") == 0) {
+            free(line);
+            return 0;
+        }
+        if (*line) run_source(line, 1);
+        free(line);
+    }
+    return 0;
 }
+
+#endif
